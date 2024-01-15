@@ -1,0 +1,5 @@
+feature:install jdbc
+feature:install http
+feature:install webconsole
+feature:install pax-transx-jdbc
+feature:install cxf-rs-security-oauth2

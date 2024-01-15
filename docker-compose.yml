@@ -1,0 +1,38 @@
+version: '1.0'
+
+services:
+  talendesb:
+    image: quaino/talendesb:1.0
+    ports:
+      - "8040:8040"
+    labels:
+      - traefik.enable=true
+      # Configuración para /services
+      - traefik.http.routers.talendesb-services.rule=PathPrefix(`/services`)
+      - traefik.http.routers.talendesb-services.service=talendesb-services
+      - traefik.http.services.talendesb-services.loadbalancer.server.port=8040
+      # Configuración para /servicio1
+      - traefik.http.routers.talendesb-servicio1.rule=PathPrefix(`/servicio1`)
+      - traefik.http.routers.talendesb-servicio1.service=talendesb-servicio1
+      - traefik.http.services.talendesb-servicio1.loadbalancer.server.port=12001
+    volumes:
+      - ./deploy-talend:/Talend/Runtime_ESBSE/container/deploy
+      - ./secrets-talend:/deploy/secrets
+    networks:
+      - traefik-network
+
+  traefik:    
+    image: traefik:v3.0
+    ports:    
+      - 80:80
+      - 9091:8080
+    command: --api.insecure=true --providers.docker=true --api=true --entryPoints.web.address=:80
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-network
+
+networks:
+  traefik-network:
+    external: true
+
